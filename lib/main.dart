@@ -119,7 +119,7 @@ class _FormularioPageState extends State<FormularioPage> {
             ),
             const SizedBox(height: 12),
 
-            // EXERCÍCIO 02: Campo de 'Observador' (Nome de quem registou)
+            // EXERCÍCIO 02: Campo de 'Observador' (Marcelo Barbosa Wenceslau Filho)
             TextField(
               controller: _observadorController,
               decoration: const InputDecoration(
