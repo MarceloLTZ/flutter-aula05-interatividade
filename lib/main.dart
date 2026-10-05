@@ -1,121 +1,196 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MeuApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MeuApp extends StatelessWidget {
+  const MeuApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Aula 05 - Interatividade',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const FormularioPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+// Estrutura de dados para armazenar cada registo
+class Registro {
+  final String titulo;
+  final String observador;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Registro({required this.titulo, required this.observador});
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class FormularioPage extends StatefulWidget {
+  const FormularioPage({super.key});
 
-  void _incrementCounter() {
+  @override
+  State<FormularioPage> createState() => _FormularioPageState();
+}
+
+class _FormularioPageState extends State<FormularioPage> {
+  // Controllers para capturar os campos de texto
+  final TextEditingController _tituloController = TextEditingController();
+  final TextEditingController _observadorController = TextEditingController();
+
+  // Lista onde os registos guardados ficam armazenados
+  final List<Registro> _listaRegistros = [];
+
+  // EXERCÍCIO 01: Função para limpar/resetar o formulário manualmente
+  void _limparFormulario() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _tituloController.clear();
+      _observadorController.clear();
     });
+  }
+
+  // Função para adicionar um novo registo
+  void _cadastrar() {
+    final String titulo = _tituloController.text.trim();
+    final String observador = _observadorController.text.trim();
+
+    if (titulo.isEmpty || observador.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _listaRegistros.add(
+        Registro(
+          titulo: titulo,
+          observador: observador,
+        ),
+      );
+    });
+
+    // EXERCÍCIO 03: Exibir SnackBar com a contagem total atualizada
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Cadastro efetuado! Total de registos: ${_listaRegistros.length}',
+        ),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Limpa o formulário após o cadastro
+    _limparFormulario();
+  }
+
+  @override
+  void dispose() {
+    _tituloController.dispose();
+    _observadorController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Cadastro e Listagem'),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            // Campo de Texto principal
+            TextField(
+              controller: _tituloController,
+              decoration: const InputDecoration(
+                labelText: 'Título / Item',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // EXERCÍCIO 02: Campo de 'Observador' (Nome de quem registou)
+            TextField(
+              controller: _observadorController,
+              decoration: const InputDecoration(
+                labelText: 'Observador (Nome de quem registou)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Botões de Ação
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _cadastrar,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Cadastrar'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // EXERCÍCIO 01: Botão de Limpar / Resetar
+                OutlinedButton(
+                  onPressed: _limparFormulario,
+                  child: const Text('Limpar'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Registos Efetuados:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Exibição da lista
+            Expanded(
+              child: _listaRegistros.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Nenhum registo efetuado.',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _listaRegistros.length,
+                      itemBuilder: (context, index) {
+                        final item = _listaRegistros[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Text('${index + 1}'),
+                            ),
+                            title: Text(item.titulo),
+                            // EXERCÍCIO 02: Nome do observador exibido no subtítulo da lista
+                            subtitle: Text('Observador: ${item.observador}'),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
