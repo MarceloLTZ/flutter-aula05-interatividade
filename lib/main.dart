@@ -76,7 +76,7 @@ class _FormularioPageState extends State<FormularioPage> {
       );
     });
 
-    // EXERCÍCIO 03: Exibir SnackBar com a contagem total atualizada
+    // EXERCÍCIO 03: Exibir SnackBar com a contagem total atualizada (completo)
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
